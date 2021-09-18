@@ -46,13 +46,13 @@ app.post('/signin',(req,res) => {
 
 
 app.post('/register',(req,res) =>{
-	const {FirstName,LastName,Email,Password} = req.body;
+	const {firstName,lastName,email,password} = req.body;
 	database.users.push({
 		id: '125',
-		FirstName: FirstName,
-		LastName: LastName,
-		Email: Email,
-		Password: Password,
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+		password: password,
 		entries: 0,
 		joined: new Date()
 	})
