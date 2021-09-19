@@ -1,7 +1,27 @@
 const express = require('express');
 const cors = require('cors');
+// const e = require('express');
+const knex = require('knex');
+
+
+const db = knex({
+	client: 'pg',
+	connection: {
+	  host : '127.0.0.1',
+	  port : 3306,
+	  user : 'postgres',
+	  password : 'test',
+	  database : 'postgres'
+	}
+  });
+ 
+//   knex.select('*').from('users').then(data => {
+// 	  console.log(data);
+//   });
+
 
 const app = express();
+
 
 
 app.use(express.json());
@@ -47,15 +67,12 @@ app.post('/signin',(req,res) => {
 
 app.post('/register',(req,res) =>{
 	const {firstName,lastName,email,password} = req.body;
-	database.users.push({
-		id: '125',
+	db('users').insert({
 		firstName: firstName,
-		lastName: lastName,
+		lastName:lastName,
 		email: email,
-		password: password,
-		entries: 0,
 		joined: new Date()
-	})
+	}).then(console.log)
 	res.json(database.users[database.users.length-1])
 })
 
