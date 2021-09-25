@@ -8,17 +8,19 @@ const db = knex({
 	client: 'pg',
 	connection: {
 	  host : '127.0.0.1',
-	  port : 3306,
 	  user : 'postgres',
-	  password : 'test',
-	  database : 'postgres'
+	  password : '73994812',
+	  database : 'SmartDetch-db'
 	}
   });
  
-//   knex.select('*').from('users').then(data => {
-// 	  console.log(data);
-//   });
+  // db.select('*').from('users').then(data => {
+	 //  console.log(data);
+  // });
 
+db.select('*').from('users').then(data =>{
+	console.log(data)
+});
 
 const app = express();
 
@@ -31,8 +33,8 @@ const database = {
 	users: [
 	{
 		id: '123',
-		firstName: 'Adhavan',
-		lastName: 'T',
+		firstname: 'Adhavan',
+		lastname: 'T',
 		email: 'adhavan02@gmail.com',
 		password: 'adhavan07',
 		entries: 0,
@@ -41,8 +43,8 @@ const database = {
 	},
 	{
 		id: '124',
-		firstName: 'John Sam',
-		lastName: 'Daniel',
+		firstname: 'John Sam',
+		lastname: 'Daniel',
 		email: "johnsam@gmail.com",
 		password: 'john07',
 		entries: 0,
@@ -66,10 +68,10 @@ app.post('/signin',(req,res) => {
 
 
 app.post('/register',(req,res) =>{
-	const {firstName,lastName,email,password} = req.body;
+	const {firstname,lastname,email,password} = req.body;
 	db('users').insert({
-		firstName: firstName,
-		lastName:lastName,
+		firstname: firstname,
+		lastname:lastname,
 		email: email,
 		joined: new Date()
 	}).then(console.log)
@@ -77,17 +79,29 @@ app.post('/register',(req,res) =>{
 })
 
 app.get('/profile/:id',(req,res) => {
-	const{id} = req.params;
-	let found = false;
-	database.users.forEach(user => {
-		if(user.id === id){
-		    found = true;
-			return res.json(user);
-		}
-	})
-	if(!found){
-		res.status(404).json("no user founded")
-	}
+	 const { id } = req.params;
+  	 db.select('*').from('users').where({id})
+	    .then(user => {
+	      if (user.length) {
+	        res.json(user[0])
+	      } else {
+	        res.status(400).json('Not found')
+	      }
+	    })
+	    .catch(err => res.status(400).json('error getting user'))
+	// const{id} = req.params;
+	// // let found = false;
+	
+	// db.select('*').form('users').where({id})
+	// 	.then(user => {
+	// 	  if(user.id === id){
+	// 	    // found = true;
+	// 		return res.json(user);
+	// 	}
+	// })
+	// if(!found){
+	// 	res.status(404).json("no user founded")
+	// }
 	
 })
 
