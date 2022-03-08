@@ -130,7 +130,7 @@ app.post('/channels/:channnelName/chaincodes/:chaincodeName', async function (re
 
 });
 
-app.post('/channels/:channnelName/chaincodes/:chaincodeName', async function (req, res) {
+app.get('/channels/:channnelName/chaincodes/:chaincodeName', async function (req, res) {
 
 });
 
