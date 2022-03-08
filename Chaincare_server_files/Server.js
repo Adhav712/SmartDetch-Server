@@ -105,6 +105,7 @@ app.post('/createuser', async (req, res) => {
         req.json({ success: false, message: response});
     }
 
+
 });
 
 
@@ -127,11 +128,114 @@ app.post('/users/login', async function (req, res) {
 
 //Invoke trcancation on chaincode on target peers
 app.post('/channels/:channnelName/chaincodes/:chaincodeName', async function (req, res) {
+    try {
+        logger.debug('====================INVOKE ON CHAINCODE======================');
+        var peers = req.body.peers;
+        var chaincodeName = reg.params.chaincodeName;
+        var channelName = reg. params.channelName;
+        var fon = req.body.fcn;
+        var args = reg.body.args;
+        var transient = req.body.transient;
+        var orgName = req.orgname;
+        var userEmail = req.useremail;
 
+        Logger.debug(`Transient data is :${transient}`)
+        logger.debug('channelName:' + channelName);
+        logger.debug('chaincodeName ;' + chaincodeName);
+        Logger.debug('fcn :'+ fcn);
+        Logger.debug(' args : ' + args);
+        logger.debug('org' + orgName);
+    
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }   
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage ('\'fcn\''));
+            return;
+        }
+        if (!args) {
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }   
+
+        let message = await invoke.invokeTransaction(channelName, chaincodeName, fcnargs, userEmail, orgName, transient);
+        console.log(`message result is : ${message.message}`)
+        if (message, message.startsWith('Successfully ')){
+            const response_payload = {
+                success: true,
+                result: message,
+                // error: null,
+                errorData: message
+        }
+        res.send(response_payload);
+    }
+
+    }catch(error){
+        const response_payload = {
+            success: false,
+            result: null,
+            error: error.name,
+            errorData: error.message
+        }
+        res.send(response_payload)
+    }
 });
 
 app.get('/channels/:channnelName/chaincodes/:chaincodeName', async function (req, res) {
+    try{
+        logger.debug("======================= QUERY BY CHAINCODE ==================================");
+        var channelName = req.params.chaincodeName;
+        var chaincodeName = req.params.chaincodeName;
+        console.log(`chaincode name is :${chaincodeName}`)
+        let args = req.query.args;
+        let fcn = req.query.fcn;
+        let peer = req.query.peer;
 
+        args = args.replace(/'/g, '"');
+        //args = JSON.parse(args);
+        logger.debug(args);
+
+        logger.debug('channelName:' + channelName);
+        logger.debug('chaincodeName ;' + chaincodeName);
+        Logger.debug('fcn :'+ fcn);
+        Logger.debug(' args : ' + args);
+
+        if (!channelName){
+            res.json(getErrorMessage('\' chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''))
+            return;
+        }
+        if (!fcn){
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+        if(!args){
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }
+        console.log('args==========',args);
+        //args = args.replace(/'/g, '"');
+        //args = JSON.parse(args);
+    
+        let message = await query.query(channelName, chaincodeName, args, fcn, req.useremail, req.orgName);
+
+        const response_payload= {
+            result: message,
+            error: null,
+            errorData: null
+        }
+        res.send(response_payload)
+    }catch(err){
+    
+    } 
 });
 
 app.post('/qscc/channels/:channnelName/chaincodes/:chaincodeName', async function (req, res) {
